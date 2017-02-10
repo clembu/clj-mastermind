@@ -13,7 +13,7 @@
      v
      :else
        (recur
-         (conj v (rand-nth (color-vec)))
+         (conj v (rand-nth color-vec))
          (dec n)))))
 
 (defn indications
@@ -152,4 +152,4 @@
 (defn string-to-code
   "Returns the vector of the conversion of the characters of the string"
   [s]
-  (vec (map char-to-col (seq s))))
+  (vec (map char-to-col (seq (clojure.string/lower-case s)))))

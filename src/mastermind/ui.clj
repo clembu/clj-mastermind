@@ -36,10 +36,10 @@ _(____/___/___/_(___(_/___/___(___ _/___/_(___/_(___ _____/__/___|_(___/_(___/__
   "
 Type a series of characters:
 
-  `b` is `:blue`
-  `w` is `:white`
-  `r` is `:red`
-  `y` is `:yellow`
+  `b` is `blue`
+  `w` is `white`
+  `r` is `red`
+  `y` is `yellow`
   `o` is `black` (that's new :p)
   `g` is `green`
 

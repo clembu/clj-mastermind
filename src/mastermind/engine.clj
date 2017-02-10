@@ -137,8 +137,8 @@
   `w` is `:white`
   `r` is `:red`
   `y` is `:yellow`
-  `o` is `black` (new!)
-  `g` is `green`"
+  `o` is `:black` (new!)
+  `g` is `:green`"
   [c]
   (case c
     \b :blue

@@ -153,7 +153,32 @@
     \g :green
     :invalid))
 
+(defn char-to-ind
+  "Returns the indication label matching a character.
+
+  `o` is `:good`
+  `x` is `:color`"
+  [c]
+  (case c
+    \o :good
+    \x :color
+    :invalid))
+
+
 (defn string-to-code
   "Returns the vector of the conversion of the characters of the string"
   [s]
   (vec (map char-to-col (seq (clojure.string/lower-case s)))))
+
+(defn string-to-indications
+  "Returns the indication map corresponding to the string"
+  [s]
+  (loop [matches (re-seq #"(?i)(\d+)(x|o)" s)
+         ind {}]
+    (if (seq matches)
+      (let [[_ vs ks] (first matches)
+            v (read-string vs)
+            k (char-to-ind (first (clojure.string/lower-case ks)))]
+        (recur (rest matches)
+               (assoc ind k v)))
+      ind)))

@@ -3,7 +3,8 @@
   (:require
     [mastermind.engine :as eng]
     [mastermind.ui :as ui]
-    [mastermind.challenge :as challenge]))
+    [mastermind.challenge :as challenge]
+    [mastermind.solver :as solver]))
 
 
 (defn -main
@@ -13,7 +14,7 @@
   (case (ui/menu ["c" "Challenge the master!" :challenge]
                  ["s" "Become the master!" :solver])
     :challenge (challenge/play)
-    :solver (println "Solver Mode !!")
+    :solver (solver/play)
     (println "Haha nope!"))
   (ui/end))
 

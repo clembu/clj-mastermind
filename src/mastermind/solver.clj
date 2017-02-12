@@ -89,3 +89,11 @@
       (-> z zip/root zipper)
       :else
       (-> z zip/next recur))))
+
+
+;; PUBLIC
+
+(defn play
+  "Play the solver game"
+  []
+  (println "Not ready yet"))

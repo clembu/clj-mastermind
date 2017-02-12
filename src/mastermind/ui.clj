@@ -27,6 +27,18 @@ _(____/___/___/_(___(_/___/___(___ _/___/_(___/_(___ _____/__/___|_(___/_(___/__
                                          (_ /
   ")
 
+(def solver-header-str
+  "
+______________________________________________________________________
+      __                                    _   _
+    /    )         /                        /  /|              /
+----\--------__---/---------__---)__-------/| /-|----__----__-/----__-
+     \     /   ) /   | /  /___) /   )     / |/  |  /   ) /   /   /___)
+_(____/___(___/_/____|/__(___ _/_________/__/___|_(___/_(___/___(___ _
+
+
+  ")
+
 (def prompts-code
   ["Penetrate my mind and read it!"
    "What am I thinking?"
@@ -42,6 +54,27 @@ Type a series of characters:
   `y` is `yellow`
   `o` is `black` (that's new :p)
   `g` is `green`
+
+  I don't care about char case.
+
+  also, quit with `q` or `quit` or `exit`.
+
+  `h`|`help` display this help message
+  ")
+
+(def solver-help-str
+  "
+Type two numbers, each suffixed by a character:
+
+  `o` represents the colors I guessed at the right place
+  `x` represents the colors I guessed but at the wrong place.
+
+  For example :
+    If your code is:  blue  red    white blue
+    and I give you:   black yellow blue  blue
+    then you should give me: 1o 1x
+
+    I win when you say `4o`
 
   I don't care about char case.
 
@@ -107,6 +140,14 @@ _(___/_(___/_(___ _o_____
 (defn challenge-help
   []
   challenge-help-str)
+
+(defn solver-header
+  []
+  solver-header-str)
+
+(defn solver-help
+  []
+  (solver-help-str))
 
 (defn invalid-input
   []

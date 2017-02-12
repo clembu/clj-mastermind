@@ -3,13 +3,17 @@
             [clojure.zip :as zip]
             [clojure.pprint :as p]))
 
+(def root-value :root)
+
 (defn- branch?
   [node]
   (vector? node))
 
 (defn- value
   [node]
-  (first node))
+  (if (branch? node)
+    (first node)
+    node))
 
 (defn- children
   [branch]
@@ -35,11 +39,9 @@
   [color]
   color)
 
-(defn- get-color
-  [node]
-  (if (branch? node)
-    (value node)
-    node))
+(defn- root?
+  [zp]
+  (= root-value (value (zip/node zp))))
 
 (defn- possibilities-zip
   "Returns a zipper of all 1296 possible codes.
@@ -54,7 +56,7 @@
   "
   ([] (possibilities-zip 4 (eng/colors)))
   ([dpth col]
-   (loop [zp (zipper (make-branch :root))]
+   (loop [zp (zipper (make-branch root-value))]
      (let [depth (- (dec dpth) (count (zip/path zp)))]
        (cond
          (zip/end? zp) (zipper (zip/root zp))
@@ -70,3 +72,20 @@
                                                   [%])
                                                col))))
          :else (recur (-> zp zip/next)))))))
+
+(defn- filter-zip
+  "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
+  with all nodes for which `(pred? (value node))` returns a truthy value removed, or nil if the `(pred? (value root))` returns true"
+  [pred? zp]
+  (loop [z zp]
+    (cond
+      (root? z)
+      (if (zip/end? z)
+        (-> z zip/root zipper)
+        (-> z zip/next recur))
+      (pred? (value (zip/node z)))
+      (-> z zip/remove zip/next recur)
+      (zip/end? z)
+      (-> z zip/root zipper)
+      :else
+      (-> z zip/next recur))))

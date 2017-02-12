@@ -3,6 +3,10 @@
 (def color-vec [:red :blue :green :yellow :black :white])
 (def color-set #{:red :blue :green :yellow :black :white})
 
+(defn colors
+  []
+  color-set)
+
 (defn get-code
   "Generates a random secret code of `n` colored pins
   (there are 6 colors)"

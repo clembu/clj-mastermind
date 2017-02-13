@@ -80,13 +80,13 @@
   "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
   with only nodes for which `(pred? (value node))` returns a truthy value. The root node is skipped."
   [pred? zp]
-  (filter-zip #(pred (value (zip/node %)) zp)))
+  (filter-zip #(pred? (value (zip/node %)) zp)))
 
 (defn- filter-ordered
   "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
   with only nodes for which `(pred? (value node) node-depth)` returns a truthy value. The root node is skipped."
   [pred? zp]
-  (filter-zip #(pred (value (zip/node %)) (- 1 (count (zip/path %))) zp)))
+  (filter-zip #(pred? (value (zip/node %)) (- 1 (count (zip/path %))) zp)))
 
 (defn- filter-zip
   "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
@@ -101,7 +101,7 @@
         (-> z zip/root zipper)
         (-> z zip/next recur))
       :else
-      (-> z zip/remote zip/next recur))))
+      (-> z zip/remove zip/next recur))))
 
 
 

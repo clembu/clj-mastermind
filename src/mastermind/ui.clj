@@ -32,17 +32,23 @@ _(____/___/___/_(___(_/___/___(___ _/___/_(___/_(___ _____/__/___|_(___/_(___/__
 ______________________________________________________________________
       __                                    _   _
     /    )         /                        /  /|              /
-----\--------__---/---------__---)__-------/| /-|----__----__-/----__-
-     \     /   ) /   | /  /___) /   )     / |/  |  /   ) /   /   /___)
+----\\--------__---/---------__---)__-------/| /-|----__----__-/----__-
+     \\     /   ) /   | /  /___) /   )     / |/  |  /   ) /   /   /___)
 _(____/___(___/_/____|/__(___ _/_________/__/___|_(___/_(___/___(___ _
 
 
   ")
 
 (def prompts-code
-  ["Penetrate my mind and read it!"
-   "What am I thinking?"
-   "Read me like an open book ;)"])
+  ["Come on and read my mind!"
+   "Go ahead and guess my code!"
+   "Your turn 😉"])
+
+(def prompts-ready
+  ["Ready ? [Y/n]"
+   "Should we start ? [Y/n]"
+   "Are you ready for this ? [Y/n]"
+   "Everything good ? [Y/n]"])
 
 (def challenge-help-str
   "
@@ -195,7 +201,7 @@ _(___/_(___/_(___ _o_____
   or :invalid if the input is not legal
   "
   []
-  (let [input (read-line)]
+  (let [input (clojure.string/trim (read-line))]
     (cond
       (not input)
       :quit
@@ -208,10 +214,51 @@ _(___/_(___/_(___ _o_____
       :else
       :invalid)))
 
+(defn ready?
+  "Waits for user to input a confirmation string (Y/n),
+  or just enter to select the default option.
+
+  Returns true if user wants to continue."
+  []
+  (let [input (clojure.string/trim (read-line))]
+    (cond
+      (not input)
+      true
+      (re-matches #"(?i)y(es)?" input)
+      true
+      :else
+      false)))
+
+(defn indications
+  "Waits for user to input an indication and returns the indication map
+  or :help if the user asked for help
+  or :quit if the user asked to quit
+  or :invalid if the input is not legal
+  "
+  []
+  (let [input (clojure.string/trim (read-line))]
+    (cond
+      (clojure.string/blank? input)
+      (eng/string-to-indications "0o 0x")
+      (re-matches #"(?i)h(elp)?" input)
+      :help
+      (re-matches #"(?i)q(uit)?|exit" input)
+      :quit
+      (re-matches #"(?i)((\d+[xo])\s*){0,2}" input)
+      (eng/string-to-indications input)
+      :else
+      :invalid)))
+
+
 (defn prompt-code
   "Prints out a pretty prompt for a code"
   []
-  (println (rand-nth prompts-code)))
+  (message (rand-nth prompts-code)))
+
+(defn prompt-ready
+  "Prints out a pretty prompt asking for confirmation of continuation"
+  []
+  (message (rand-nth prompts-ready)))
 
 (defn indication
   "Displays indications in a pretty way.

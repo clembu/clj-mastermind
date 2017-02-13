@@ -6,8 +6,7 @@
 (defn reaction
   "Takes a secret code, and a guess
 
-  `react` should accept a value, and do something with it.
-  The value will be either
+  The return value will be either
     - :win if the code has been guessed and the user has won
     - a map of the following structure : { :good ngood :bad nbad }
           giving the number of pins that are respectively well-placed and badly-placed"

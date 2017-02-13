@@ -1,7 +1,10 @@
 (ns mastermind.solver
   (:require [mastermind.engine :as eng]
             [clojure.zip :as zip]
-            [clojure.pprint :as p]))
+            [clojure.pprint :as p]
+            [mastermind.ui :as ui]))
+
+(def initial-guess [:white :white :blue :blue])
 
 (def root-value :root)
 
@@ -73,9 +76,9 @@
                                                col))))
          :else (recur (-> zp zip/next)))))))
 
-(defn- filter-zip
+(defn- filter-value
   "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
-  with all nodes for which `(pred? (value node))` returns a truthy value removed, or nil if the `(pred? (value root))` returns true"
+  with all nodes for which `(pred? (value node))` returns a truthy value removed. The root node is skipped."
   [pred? zp]
   (loop [z zp]
     (cond
@@ -90,10 +93,82 @@
       :else
       (-> z zip/next recur))))
 
+(defn- filter-ordered
+  "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
+  with all nodes for which `(pred? (value node) node-depth)` returns a truthy value removed. The root node is skipped."
+  [pred? zp]
+  (loop [z zp]
+    (cond
+      (root? z)
+      (if (zip/end? z)
+        (-> z zip/root zipper)
+        (-> z zip/next recur))
+      (pred? (value (zip/node z)) (count (zip/path z)))
+      (-> z zip/remove zip/next recur)
+      (zip/end? z)
+      (-> z zip/root zipper)
+      :else
+      (-> z zip/next recur))))
+
 
 ;; PUBLIC
 
+(defn next-guess
+  "Takes the current tree of possible codes,
+  and returns the next code to try."
+  [zp]
+  (vec
+    (filter
+      (partial not= root-value)
+      (map
+        value
+        (let [z (-> zp zip/down zip/down zip/down zip/down)]
+          (concat (zip/path z) [(zip/node z)]))))))
+
+(defn update-tree
+  "Takes the current tree of possible codes,
+  the last attempted guess,
+  and the indication map it got back from the player.
+
+  Returns an updated tree of possible codes where all incompatible codes have been removed"
+  [zp guess ind]
+  (cond
+    (= ind {}) ;; Entire guess was wrong
+    (filter-value
+      #(contains? (set guess) %)
+      zp)
+
+    :else
+    zp))
+
+
+
+(defn reaction
+  "Takes an indication map
+
+  The return value is either:
+    - :win if the indication map is { :good 4 }
+    - the next guess to try out
+    - :impossible if there is no other possible guess to try"
+  [ind]
+  (if (= 4 (:good ind))
+    :win
+    (let [next ()])))
+
+(defn playloop
+  "The playloop of the solver mode.
+  `zp` is the zipper of possibilities."
+  [zp]
+  (loop [z zp]))
+
+
+
 (defn play
-  "Play the solver game"
+  "Play the solver mode.
+  It's the alternative version where the computer guesses your code."
   []
-  (println "Not ready yet"))
+  (ui/message (ui/solver-header))
+  (ui/message (ui/solver-help))
+  (ui/prompt-ready)
+  (if (ui/ready?)
+    (playloop (possibilities-zip))))

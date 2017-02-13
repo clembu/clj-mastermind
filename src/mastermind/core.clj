@@ -11,10 +11,13 @@
   "Display the intro, then play the game"
   [& args]
   (ui/start)
-  (case (ui/menu ["c" "Challenge the master!" :challenge]
-                 ["s" "Become the master!" :solver])
-    :challenge (challenge/play)
-    :solver (solver/play)
-    (println "Haha nope!"))
+  (let [opts [["c" "Challenge the master!" :challenge]
+              ["s" "Become the master!" :solver]]]
+    (loop []
+      (let [choice (ui/menu opts)]
+        (case choice
+          :challenge (challenge/play)
+          :solver (solver/play)
+          (recur)))))
   (ui/end))
 

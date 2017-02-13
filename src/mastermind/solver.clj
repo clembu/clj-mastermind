@@ -78,37 +78,40 @@
 
 (defn- filter-value
   "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
-  with all nodes for which `(pred? (value node))` returns a truthy value removed. The root node is skipped."
+  with only nodes for which `(pred? (value node))` returns a truthy value. The root node is skipped."
   [pred? zp]
-  (loop [z zp]
-    (cond
-      (root? z)
-      (if (zip/end? z)
-        (-> z zip/root zipper)
-        (-> z zip/next recur))
-      (pred? (value (zip/node z)))
-      (-> z zip/remove zip/next recur)
-      (zip/end? z)
-      (-> z zip/root zipper)
-      :else
-      (-> z zip/next recur))))
+  (filter-zip #(pred (value (zip/node %)) zp)))
 
 (defn- filter-ordered
   "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
-  with all nodes for which `(pred? (value node) node-depth)` returns a truthy value removed. The root node is skipped."
+  with only nodes for which `(pred? (value node) node-depth)` returns a truthy value. The root node is skipped."
+  [pred? zp]
+  (filter-zip #(pred (value (zip/node %)) (- 1 (count (zip/path %))) zp)))
+
+(defn- filter-zip
+  "Takes a predicate `pred?` and a zipper, and returns a new zipper, positionned at the root,
+  with only nodes for which `(pred? z)` returns a truthy value. The root node is skipped."
   [pred? zp]
   (loop [z zp]
     (cond
-      (root? z)
+      (or
+        (root? z)
+        (pred? z))
       (if (zip/end? z)
         (-> z zip/root zipper)
         (-> z zip/next recur))
-      (pred? (value (zip/node z)) (count (zip/path z)))
-      (-> z zip/remove zip/next recur)
-      (zip/end? z)
-      (-> z zip/root zipper)
       :else
-      (-> z zip/next recur))))
+      (-> z zip/remote zip/next recur))))
+
+(defn- filter-skip
+  "Takes a predicate `pred?`, a predicate `skip?` and a zipper, and returns a new zipper, positionned at the root,
+  with only locations for which `(pred? z)` returns a truthy value.
+
+  The root node is skipped.
+
+  Any tree for which `(skip? z)` returns a truthy value is skipped too. (the next tested tree is its right sibling or its parent's sibling)"
+  [pred? skip? zp])
+
 
 
 ;; PUBLIC
@@ -135,13 +138,21 @@
   (cond
     (= ind {}) ;; Entire guess was wrong
     (filter-value
-      #(contains? (set guess) %)
+      #(not (contains? (set guess) %))
       zp)
-
+    (and (ind :good) (= 4 (ind :good)))
+    (filter-ordered
+      #(= (get %2 guess) %1)
+      zp)
+    (and (ind :good) (pos? (ind :good))
+         (ind :bad) (pos? (ind :bad)))
+    (filter-ordered
+      (fn [value index]
+        (or
+          (= (get index guess) value)))
+      zp)
     :else
     zp))
-
-
 
 (defn reaction
   "Takes an indication map
@@ -159,7 +170,21 @@
   "The playloop of the solver mode.
   `zp` is the zipper of possibilities."
   [zp]
-  (loop [z zp]))
+  (ui/message
+    "
+
+ ::::::::   ::::::::  :::::::::  :::::::::  :::   :::          ::: :::
+:+:    :+: :+:    :+: :+:    :+: :+:    :+: :+:   :+:      :+: :+ :+:
++:+        +:+    +:+ +:+    +:+ +:+    +:+  +:+ +:+             +:+
++#++:++#++ +#+    +:+ +#++:++#:  +#++:++#:    +#++:              +#+
+       +#+ +#+    +#+ +#+    +#+ +#+    +#+    +#+               +#+
+#+#    #+# #+#    #+# #+#    #+# #+#    #+#    #+#         #+#    #+#
+ ########   ########  ###    ### ###    ###    ###                 ###
+
+
+    The solver is not implemented yet :'(
+
+    "))
 
 
 
@@ -172,3 +197,4 @@
   (ui/prompt-ready)
   (if (ui/ready?)
     (playloop (possibilities-zip))))
+

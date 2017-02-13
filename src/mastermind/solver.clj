@@ -103,14 +103,6 @@
       :else
       (-> z zip/remote zip/next recur))))
 
-(defn- filter-skip
-  "Takes a predicate `pred?`, a predicate `skip?` and a zipper, and returns a new zipper, positionned at the root,
-  with only locations for which `(pred? z)` returns a truthy value.
-
-  The root node is skipped.
-
-  Any tree for which `(skip? z)` returns a truthy value is skipped too. (the next tested tree is its right sibling or its parent's sibling)"
-  [pred? skip? zp])
 
 
 

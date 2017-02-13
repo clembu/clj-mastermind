@@ -187,12 +187,14 @@ _(___/_(___/_(___ _o_____
       (get-menu-val
         (read-line)
         (fn [i]
-          (reduce
-            (fn [acc opt]
-              (let [[lbl _ v] opt]
-                (if (= lbl i) v acc)))
-            nil
-            opts))))))
+          (if (re-matches #"(?i)q(uit)?|exit" input)
+            :quit
+            (reduce
+              (fn [acc opt]
+                (let [[lbl _ v] opt]
+                  (if (= lbl i) v acc)))
+              nil
+              opts)))))))
 
 (defn code
   "Waits for user to input a code and returns the code

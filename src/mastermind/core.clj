@@ -18,6 +18,7 @@
         (case choice
           :challenge (challenge/play)
           :solver (solver/play)
+          :quit false
           (recur)))))
   (ui/end))
 
